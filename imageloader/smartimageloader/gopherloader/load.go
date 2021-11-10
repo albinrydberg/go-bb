@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-type GopherLoader struct {}
+type GopherLoader struct{}
 
 func (c GopherLoader) Load() (bytes.Buffer, error) {
 	f, err := os.Open("resources/gopher.png")
