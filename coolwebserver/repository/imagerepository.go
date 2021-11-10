@@ -4,6 +4,10 @@ import (
 	"bytes"
 )
 
+const (
+	defaultKey = "default"
+)
+
 type imageRepository struct {
 	repo map[string]bytes.Buffer
 }
@@ -14,17 +18,14 @@ func New() Repository {
 	}
 }
 
-func NewPreLoaded(key string, imageLoader ImageLoader) Repository {
+func NewWithDefault(imageLoader ImageLoader) Repository {
 	repo := imageRepository{
 		repo: make(map[string]bytes.Buffer),
 	}
 
-	image, err := imageLoader.Load()
-	if err != nil {
+	if err := repo.Load(defaultKey, imageLoader); err != nil {
 		panic(err)
 	}
-
-	repo.Put(key, image)
 
 	return repo
 }
@@ -34,7 +35,23 @@ func (i imageRepository) Put(key string, buffer bytes.Buffer) {
 }
 
 func (i imageRepository) Get(key string) bytes.Buffer {
-	return i.repo[key]
+	imageBuffer, exists := i.repo[key]
+	if !exists {
+		return i.repo[defaultKey]
+	}
+
+	return imageBuffer
+}
+
+func (i imageRepository) Load(key string, imageLoader ImageLoader) error {
+	image, err := imageLoader.Load()
+	if err != nil {
+		return err
+	}
+
+	i.Put(key, image)
+
+	return nil
 }
 
 var _ Repository = imageRepository{}

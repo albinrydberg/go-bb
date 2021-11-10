@@ -33,3 +33,17 @@ func (rh RepoHandler) Get(writer http.ResponseWriter, request *http.Request) {
 		log.Println("unable to write image")
 	}
 }
+
+func (rh RepoHandler) Post(writer http.ResponseWriter, request *http.Request) {
+	repoKey := mux.Vars(request)["key"]
+
+	jpeg := rh.repo.Get(repoKey)
+
+	writer.Header().Set(headers.ContentTypeHeaderKey, headers.ContentTypeJPEG)
+	writer.Header().Set(headers.ContentLengthHeaderKey, fmt.Sprintf("%d", len(jpeg.Bytes())))
+
+	if _, err := writer.Write(jpeg.Bytes()); err != nil {
+		log.Println("unable to write image")
+	}
+}
+

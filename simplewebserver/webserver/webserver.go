@@ -21,7 +21,7 @@ type WebServer struct {
 	router     *mux.Router
 }
 
-func New() *WebServer {
+func New() WebServer {
 	router := mux.NewRouter()
 
 	route := router.NewRoute()
@@ -29,7 +29,7 @@ func New() *WebServer {
 	route.Methods(http.MethodGet)
 	route.HandlerFunc(simpleimagehandler.Handle)
 
-	return &WebServer{
+	return WebServer{
 		router: router,
 	}
 }
